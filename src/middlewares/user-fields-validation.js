@@ -1,6 +1,6 @@
 const userFieldValidation = (req, res, next) => {
-  console.log("validaion");
-  if (!req.body.name || req.body.name.length < 2)
+  console.log(req.body);
+  if (!req.body || !req.body.name || req.body.name.length < 2)
     return next(new Error("something went wrong"));
   if (!req.body.password || req.body.length < 8 || req.body.length > 16)
     return next(new Error("something went wrong"));

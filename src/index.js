@@ -17,6 +17,7 @@ cloudinary.config({
   api_secret: CLOUDINARY_SECRET_KEY,
 });
 app.use(expressUploader({ useTempFiles: true }));
+app.use(express.json());
 app.use("/api/v1/users", UserRoutes);
 app.use((err, req, res, next) => {
   res.status(500).json({
