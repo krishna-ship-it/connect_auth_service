@@ -1,11 +1,31 @@
 const { UserRepository } = require("./../repositories/index");
 const bcrypt = require("bcrypt");
+const { signJwt } = require("./../utils/commons/jwt");
 class UserService {
-  static async create(userData) {
+  static async signup(userData) {
     try {
-      userData.password = await bcrypt.hash(userData.password, 12);
-      const user = await UserRepository.create(userData);
-      return user;
+      const user = await UserRepository.signup(userData);
+      const token = await signJwt({ id: user.id });
+      return { user, token };
+    } catch (err) {
+      throw err;
+    }
+  }
+  static async delete(id) {
+    try {
+      await UserRepository.delete(id);
+    } catch (error) {
+      throw error;
+    }
+  }
+  static async login(email, password) {
+    try {
+      const user = await UserRepository.login(email, password);
+      if (await bcrypt.compare(password, user.password)) {
+        delete user.dataValues.password;
+        const token = await signJwt({ id: user.id });
+        return { user, token };
+      } else throw new Error("invalid credentials");
     } catch (err) {
       throw err;
     }

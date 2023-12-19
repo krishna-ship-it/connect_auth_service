@@ -1,6 +1,21 @@
 const { UserService } = require("./../services/index");
 const { v2: cloudinary } = require("cloudinary");
-const create = async (req, res, next) => {
+
+const login = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+    const data = await UserService.login(email, password);
+    res.status(200).json({ data });
+  } catch (err) {
+    res.status(400).json({
+      err,
+      message: "something went wrong",
+    });
+  }
+};
+
+const signup = async (req, res, next) => {
   try {
     const userData = {
       name: req.body.name,
@@ -9,10 +24,10 @@ const create = async (req, res, next) => {
       avatar_public_id: req.body.avatar_public_id,
       avatar_public_url: req.body.avatar_public_url,
     };
-    console.log(userData);
-    const user = await UserService.create(userData);
+
+    const data = await UserService.signup(userData);
     res.status(200).json({
-      user,
+      data,
     });
   } catch (err) {
     cloudinary.uploader.destroy(req.avatar_public_id);
@@ -20,6 +35,15 @@ const create = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  try {
+    await UserService.delete(req.id);
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
-  create,
+  signup,
+  login,
+  deleteUser,
 };
