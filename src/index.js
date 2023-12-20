@@ -11,6 +11,8 @@ const {
   CLOUDINARY_SECRET_KEY,
 } = require("./config/index");
 const { UserRoutes } = require("./routes/v1/index.js");
+const errorHanlder = require("./utils/commons/errorHandler.js");
+
 cloudinary.config({
   cloud_name: CLOUDINARY_CLOUD_NAME,
   api_key: CLOUDINARY_API_KEY,
@@ -19,12 +21,8 @@ cloudinary.config({
 app.use(expressUploader({ useTempFiles: true }));
 app.use(express.json());
 app.use("/api/v1/users", UserRoutes);
-app.use((err, req, res, next) => {
-  res.status(500).json({
-    success: false,
-    message: err.message,
-  });
-});
+app.use(errorHanlder);
+
 app.listen(PORT, () => {
   console.log(`server started at port ${PORT}`);
 });
