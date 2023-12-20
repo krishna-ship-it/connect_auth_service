@@ -1,10 +1,12 @@
 const bcrypt = require("bcrypt");
+const ApiError = require("./../utils/errors/ApiError");
+
 const hashText = async (req, res, next) => {
   try {
     req.body.password = await bcrypt.hash(req.body.password, 12);
     next();
   } catch (err) {
-    return next(new Error("failed to encrypt password!"));
+    return next(new ApiError("internal server error", 500, "serverError"));
   }
 };
 module.exports = hashText;
