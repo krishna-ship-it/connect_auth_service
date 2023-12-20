@@ -42,8 +42,27 @@ const deleteUser = async (req, res, next) => {
     next(err);
   }
 };
+const updateProfilePicture = async (req, res, next) => {
+  try {
+    const user = await UserService.updateProfilePicture(
+      req.user.id,
+      req.body.avatar_public_id,
+      req.body.avatar_public_url
+    );
+    res.status(200).json({
+      user,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      message: err.message,
+      err,
+    });
+  }
+};
 module.exports = {
   signup,
   login,
   deleteUser,
+  updateProfilePicture,
 };
