@@ -4,4 +4,5 @@ module.exports = {
   LoginUserFieldValidation: require("./login-user-field-validation"),
   VerifyToken: require("./token-verification"),
   HashText: require("./hash-text"),
+  DestroyImageFromCloudinary: require("./delete-image-from-cloudinary"),
 };
