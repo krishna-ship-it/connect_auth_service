@@ -7,6 +7,7 @@ const {
   LoginUserFieldValidation,
   VerifyToken,
   HashText,
+  DestroyImageFromCloudinary,
 } = require("./../../middlewares/index");
 router
   .route("/signup")
@@ -17,9 +18,12 @@ router
     UserController.signup
   );
 router.route("/login").post(LoginUserFieldValidation, UserController.login);
-router.route("/protected").get(VerifyToken, (req, res, next) => {
-  res.status(200).json({
-    message: "success",
-  });
-});
+router
+  .route("/update-profile-picture")
+  .patch(
+    VerifyToken,
+    DestroyImageFromCloudinary,
+    UploadImageToCloudinary,
+    UserController.updateProfilePicture
+  );
 module.exports = router;
