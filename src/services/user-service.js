@@ -21,12 +21,14 @@ class UserService {
   }
   static async login(email, password) {
     try {
-      const user = await UserRepository.login(email);
+      const user = await UserRepository.findUserByEmail(email);
       if (await bcrypt.compare(password, user.password)) {
         delete user.dataValues.password;
         const token = await signJwt({ id: user.id });
         return { user, token };
-      } else throw new ApiError("invalid credentials", 401, "serverError");
+      } else {
+        throw new ApiError("invalid credentials", 401, "unauthorizedAccess");
+      }
     } catch (err) {
       throw err;
     }
@@ -40,10 +42,29 @@ class UserService {
       const user = await UserRepository.findUserById(user_id);
       user.avatar_public_id = avatar_public_id;
       user.avatar_public_url = avatar_public_url;
-      return UserRepository.updateUserProfile(user);
+      const updatedUser = await UserRepository.update(user);
+      delete user.dataValues.password;
+      return updatedUser;
     } catch (err) {
       throw new ApiError(
         "internal server error while updating the profile picture (service Layer)",
+        500,
+        "serverError"
+      );
+    }
+  }
+  static async changePassword(user_id, oldPlainPassword, newHashedPassword) {
+    try {
+      const user = await UserRepository.findUserById(user_id);
+      if (!(await bcrypt.compare(oldPlainPassword, user.password)))
+        throw new ApiError("incorrect old password", 401, "UnauthorizedAccess");
+      user.password = newHashedPassword;
+      const updatedUser = await UserRepository.update(user);
+      return updatedUser;
+    } catch (err) {
+      if (err.name === "UnauthorizedAccess") throw err;
+      throw new ApiError(
+        "internal server error while updating password (service layer)",
         500,
         "serverError"
       );

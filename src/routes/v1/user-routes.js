@@ -26,4 +26,9 @@ router
     UploadImageToCloudinary,
     UserController.updateProfilePicture
   );
+
+router
+  .route("/update-password")
+  .patch(VerifyToken, HashText, UserController.changePassword);
+
 module.exports = router;
