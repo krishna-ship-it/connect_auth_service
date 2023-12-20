@@ -29,21 +29,6 @@ class UserRepository {
       );
     }
   }
-  static async login(email) {
-    try {
-      const user = await User.findOne({
-        where: { email },
-      });
-      if (!user) throw new ApiError("invalid credentials", 401, "serverError");
-      return user;
-    } catch (err) {
-      throw new ApiError(
-        "internal server error while logging in (Repository Layer)",
-        500,
-        "serverError"
-      );
-    }
-  }
   static async findUserById(id) {
     try {
       const user = await User.findOne({
@@ -62,7 +47,7 @@ class UserRepository {
       );
     }
   }
-  static async updateUserProfile(userInstance) {
+  static async update(userInstance) {
     try {
       await userInstance.save();
       delete userInstance.dataValues.password;
@@ -70,6 +55,24 @@ class UserRepository {
     } catch (err) {
       throw new ApiError(
         "internal server error while updating the profile picture",
+        500,
+        "serverError"
+      );
+    }
+  }
+  static async findUserByEmail(email) {
+    try {
+      const user = await User.findOne({
+        where: {
+          email,
+        },
+      });
+      if (!user) throw new ApiError("invalid email", 404, "BadRequest");
+      return user;
+    } catch (err) {
+      if (err.name === "BadRequest") throw err;
+      throw new ApiError(
+        "internal server error while searching user",
         500,
         "serverError"
       );
