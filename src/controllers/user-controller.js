@@ -1,3 +1,4 @@
+const ApiError = require("../utils/errors/ApiError");
 const { UserService } = require("./../services/index");
 const { v2: cloudinary } = require("cloudinary");
 
@@ -8,10 +9,7 @@ const login = async (req, res, next) => {
     const data = await UserService.login(email, password);
     res.status(200).json({ data });
   } catch (err) {
-    res.status(400).json({
-      err,
-      message: "something went wrong",
-    });
+    next(err);
   }
 };
 
@@ -60,9 +58,41 @@ const updateProfilePicture = async (req, res, next) => {
     });
   }
 };
+const changePassword = async (req, res, next) => {
+  if (!req.body.oldPassword)
+    return next(new ApiError("old password is required", 400, "BadRequest"));
+  try {
+    const user = await UserService.changePassword(
+      req.user.id,
+      req.body.oldPassword,
+      req.body.password
+    );
+    res.status(200).json({
+      user,
+    });
+  } catch (err) {
+    if (
+      err.name === "serverError" ||
+      err.name === "UnauthorizedAccess" ||
+      err.name === "BadRequest"
+    )
+      return next(err);
+
+    console.log(err);
+    next(
+      new ApiError(
+        `failed to change password,try again letter`,
+        500,
+        "serverError"
+      )
+    );
+  }
+};
+
 module.exports = {
   signup,
   login,
   deleteUser,
   updateProfilePicture,
+  changePassword,
 };
