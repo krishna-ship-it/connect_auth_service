@@ -1,7 +1,7 @@
 const ApiError = require("../utils/errors/ApiError");
 const { UserService } = require("./../services/index");
 const { v2: cloudinary } = require("cloudinary");
-
+const { FORGET_PASSWORD_OTP_ATTEMPTS } = require("./../config/index");
 const login = async (req, res, next) => {
   try {
     const email = req.body.email;
@@ -21,8 +21,9 @@ const signup = async (req, res, next) => {
       password: req.body.password,
       avatar_public_id: req.body.avatar_public_id,
       avatar_public_url: req.body.avatar_public_url,
+      otp_expires_in: Date.now(),
+      forget_pass_attempts: FORGET_PASSWORD_OTP_ATTEMPTS,
     };
-
     const data = await UserService.signup(userData);
     res.status(200).json({
       data,
@@ -89,10 +90,60 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+const forgetPassword = async (req, res, next) => {
+  try {
+    if (!req.body.email)
+      return next(new ApiError("email is required", 400, "BadRequest"));
+    await UserService.forgetPassword(req.body.email);
+    res.status(200).json({
+      message: "otp successfully sent to your email",
+    });
+  } catch (err) {
+    if (err.name === "TooManyRequest" || err.name === "BadRequest")
+      return next(err);
+
+    next(
+      new ApiError(
+        `failed to full fill your request of forget password,try again letter`,
+        500,
+        "serverError"
+      )
+    );
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  if (!req.body.email || !req.body.otp)
+    return next(new ApiError("otp,email both are required", 400, "BadRequest"));
+
+  try {
+    await UserService.resetPassword(
+      req.body.email,
+      req.body.password,
+      req.body.otp
+    );
+    res.status(200).json({
+      message:
+        "successfully changed password, now login with your email and password",
+    });
+  } catch (err) {
+    if (err.name === "BadRequest") return next(err);
+    next(
+      new ApiError(
+        `failed to full fill your request of forget password,try again letter`,
+        500,
+        "serverError"
+      )
+    );
+  }
+};
+
 module.exports = {
   signup,
   login,
   deleteUser,
   updateProfilePicture,
   changePassword,
+  forgetPassword,
+  resetPassword,
 };
