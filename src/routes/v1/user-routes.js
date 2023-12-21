@@ -6,7 +6,7 @@ const {
   UploadImageToCloudinary,
   LoginUserFieldValidation,
   VerifyToken,
-  HashText,
+  HashPass,
   DestroyImageFromCloudinary,
 } = require("./../../middlewares/index");
 router
@@ -14,7 +14,7 @@ router
   .post(
     UserFieldValidation,
     UploadImageToCloudinary,
-    HashText,
+    HashPass,
     UserController.signup
   );
 router.route("/login").post(LoginUserFieldValidation, UserController.login);
@@ -29,6 +29,8 @@ router
 
 router
   .route("/update-password")
-  .patch(VerifyToken, HashText, UserController.changePassword);
+  .patch(VerifyToken, HashPass, UserController.changePassword);
+router.route("/forget-password").patch(UserController.forgetPassword);
+router.route("/reset-password").patch(HashPass, UserController.resetPassword);
 
 module.exports = router;
