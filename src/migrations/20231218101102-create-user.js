@@ -36,6 +36,19 @@ module.exports = {
         isIn: ["user", "admin"],
         defaultValue: "user",
       },
+      otp: {
+        type: Sequelize.STRING,
+      },
+      otp_expires_in: {
+        allowNull: false,
+        type: Sequelize.BIGINT,
+      },
+      forget_pass_attempts: {
+        type: Sequelize.TINYINT,
+        allowNull: false,
+        defaultValue: 3,
+      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

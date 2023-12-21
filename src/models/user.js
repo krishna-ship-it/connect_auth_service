@@ -34,6 +34,20 @@ module.exports = (sequelize, DataTypes) => {
       },
       avatar_public_id: DataTypes.STRING,
       avatar_public_url: DataTypes.STRING,
+
+      otp: {
+        type: DataTypes.STRING,
+      },
+
+      otp_expires_in: {
+        allowNull: false,
+        type: DataTypes.BIGINT,
+      },
+      forget_pass_attempts: {
+        type: DataTypes.TINYINT,
+        allowNull: false,
+        defaultValue: 3,
+      },
     },
     {
       sequelize,
