@@ -2,6 +2,7 @@ const ApiError = require("../utils/errors/ApiError");
 const { UserService } = require("./../services/index");
 const { v2: cloudinary } = require("cloudinary");
 const { FORGET_PASSWORD_OTP_ATTEMPTS } = require("./../config/index");
+const { errors, statusCodes } = require("../utils/errors/errors");
 const login = async (req, res, next) => {
   try {
     const email = req.body.email;
@@ -52,16 +53,18 @@ const updateProfilePicture = async (req, res, next) => {
       user,
     });
   } catch (err) {
-    res.status(err.statusCode || 500).json({
-      success: false,
-      message: err.message,
-      err,
-    });
+    next(err);
   }
 };
 const changePassword = async (req, res, next) => {
   if (!req.body.oldPassword)
-    return next(new ApiError("old password is required", 400, "BadRequest"));
+    return next(
+      new ApiError(
+        "old password is required",
+        statusCodes.BadRequest,
+        errors.BadRequest
+      )
+    );
   try {
     const user = await UserService.changePassword(
       req.user.id,
@@ -72,49 +75,38 @@ const changePassword = async (req, res, next) => {
       user,
     });
   } catch (err) {
-    if (
-      err.name === "serverError" ||
-      err.name === "UnauthorizedAccess" ||
-      err.name === "BadRequest"
-    )
-      return next(err);
-
-    console.log(err);
-    next(
-      new ApiError(
-        `failed to change password,try again letter`,
-        500,
-        "serverError"
-      )
-    );
+    next(err);
   }
 };
 
 const forgetPassword = async (req, res, next) => {
   try {
     if (!req.body.email)
-      return next(new ApiError("email is required", 400, "BadRequest"));
+      return next(
+        new ApiError(
+          "email is required",
+          statusCodes.BadRequest,
+          errors.BadRequest
+        )
+      );
     await UserService.forgetPassword(req.body.email);
     res.status(200).json({
       message: "otp successfully sent to your email",
     });
   } catch (err) {
-    if (err.name === "TooManyRequest" || err.name === "BadRequest")
-      return next(err);
-
-    next(
-      new ApiError(
-        `failed to full fill your request of forget password,try again letter`,
-        500,
-        "serverError"
-      )
-    );
+    next(err);
   }
 };
 
 const resetPassword = async (req, res, next) => {
   if (!req.body.email || !req.body.otp)
-    return next(new ApiError("otp,email both are required", 400, "BadRequest"));
+    return next(
+      new ApiError(
+        "otp,email both are required",
+        statusCodes.BadRequest,
+        errors.BadRequest
+      )
+    );
 
   try {
     await UserService.resetPassword(
@@ -127,14 +119,7 @@ const resetPassword = async (req, res, next) => {
         "successfully changed password, now login with your email and password",
     });
   } catch (err) {
-    if (err.name === "BadRequest") return next(err);
-    next(
-      new ApiError(
-        `failed to full fill your request of forget password,try again letter`,
-        500,
-        "serverError"
-      )
-    );
+    next(err);
   }
 };
 

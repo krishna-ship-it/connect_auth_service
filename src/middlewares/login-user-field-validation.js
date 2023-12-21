@@ -1,5 +1,5 @@
 const ApiError = require("../utils/errors/ApiError");
-
+const { errors, statusCodes } = require("./../utils/errors/errors");
 const loginValidation = (req, res, next) => {
   if (
     !req.body ||
@@ -8,10 +8,20 @@ const loginValidation = (req, res, next) => {
     !req.body.email.includes(".")
   )
     return next(
-      new ApiError("please enter a valid email", 400, "validationError")
+      new ApiError(
+        "please enter a valid email",
+        statusCodes.BadRequest,
+        errors.BadRequest
+      )
     );
   if (!req.body.password)
-    return next(new ApiError("password is required", 400, "validationError"));
+    return next(
+      new ApiError(
+        "password is required",
+        statusCodes.BadRequest,
+        errors.BadRequest
+      )
+    );
   next();
 };
 

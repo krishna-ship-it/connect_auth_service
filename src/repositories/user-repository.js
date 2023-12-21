@@ -1,5 +1,6 @@
 const ApiError = require("../utils/errors/ApiError");
 const { User } = require("./../models/index");
+const { statusCodes, errors } = require("./../utils/errors/errors");
 class UserRepository {
   static async signup(userData) {
     try {
@@ -7,11 +8,7 @@ class UserRepository {
       delete user.dataValues.password;
       return user;
     } catch (err) {
-      throw new ApiError(
-        "internal server error while signing up(Repository Layer)",
-        500,
-        "serverError"
-      );
+      throw err;
     }
   }
   static async delete(id) {
@@ -36,15 +33,15 @@ class UserRepository {
           id,
         },
       });
-      if (!user) throw new ApiError("user does not exists", 400, "BadRequest");
+      if (!user)
+        throw new ApiError(
+          "user does not exists",
+          statusCodes.BadRequest,
+          errors.BadRequest
+        );
       return user;
-    } catch (error) {
-      if (error.name === "BadRequest") throw error;
-      throw new ApiError(
-        "internal server error while searching the user",
-        500,
-        "serverError"
-      );
+    } catch (err) {
+      throw err;
     }
   }
   static async update(userInstance) {
@@ -53,11 +50,7 @@ class UserRepository {
       delete userInstance.dataValues.password;
       return userInstance;
     } catch (err) {
-      throw new ApiError(
-        "internal server error while updating the profile picture",
-        500,
-        "serverError"
-      );
+      throw err;
     }
   }
   static async findUserByEmail(email) {
@@ -67,15 +60,15 @@ class UserRepository {
           email,
         },
       });
-      if (!user) throw new ApiError("invalid email", 404, "BadRequest");
+      if (!user)
+        throw new ApiError(
+          "invalid email",
+          statusCodes.NotFound,
+          errors.NotFound
+        );
       return user;
     } catch (err) {
-      if (err.name === "BadRequest") throw err;
-      throw new ApiError(
-        "internal server error while searching user",
-        500,
-        "serverError"
-      );
+      throw err;
     }
   }
 }

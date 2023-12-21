@@ -1,20 +1,21 @@
 const { v2: cloudinary } = require("cloudinary");
 const ApiError = require("../utils/errors/ApiError");
+const { errors, statusCodes } = require("./../utils/errors/errors");
 
 const imageDestroyer = async (req, res, next) => {
   try {
     if (!req.user.avatar_public_id)
-      return next(new ApiError("nothing to delete", 400, "BadRequest"));
+      return next(
+        new ApiError(
+          "nothing to delete",
+          statusCodes.BadRequest,
+          errors.BadRequest
+        )
+      );
     await cloudinary.uploader.destroy(req.user.avatar_public_id);
     next();
   } catch (err) {
-    return next(
-      new ApiError(
-        `failed to delete image , please try again letter,${err.message}`,
-        500,
-        "serverError"
-      )
-    );
+    return next(err);
   }
 };
 

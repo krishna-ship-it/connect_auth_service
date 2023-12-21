@@ -2,6 +2,7 @@ const { UserRepository } = require("./../repositories/index");
 const bcrypt = require("bcrypt");
 const { signJwt } = require("./../utils/commons/jwt");
 const ApiError = require("../utils/errors/ApiError");
+const { statusCodes, errors } = require("./../utils/errors/errors");
 const generateOtp = require("../utils/commons/generate-otp");
 const {
   FORGET_PASSWORD_OTP_EXPIRY,
@@ -33,7 +34,11 @@ class UserService {
         const token = await signJwt({ id: user.id });
         return { user, token };
       } else {
-        throw new ApiError("invalid credentials", 401, "unauthorizedAccess");
+        throw new ApiError(
+          "invalid credentials",
+          errors.UnauthorizedRequest,
+          statusCodes.UnauthorizedRequest
+        );
       }
     } catch (err) {
       throw err;
@@ -53,9 +58,9 @@ class UserService {
       return updatedUser;
     } catch (err) {
       throw new ApiError(
-        "internal server error while updating the profile picture (service Layer)",
-        500,
-        "serverError"
+        err.message,
+        statusCodes.ServerError,
+        errors.ServerError
       );
     }
   }
@@ -63,17 +68,16 @@ class UserService {
     try {
       const user = await UserRepository.findUserById(user_id);
       if (!(await bcrypt.compare(oldPlainPassword, user.password)))
-        throw new ApiError("incorrect old password", 401, "UnauthorizedAccess");
+        throw new ApiError(
+          "incorrect old password",
+          statusCodes.UnauthorizedRequest,
+          errors.UnauthorizedRequest
+        );
       user.password = newHashedPassword;
       const updatedUser = await UserRepository.update(user);
       return updatedUser;
     } catch (err) {
-      if (err.name === "UnauthorizedAccess") throw err;
-      throw new ApiError(
-        "internal server error while updating password (service layer)",
-        500,
-        "serverError"
-      );
+      throw err;
     }
   }
 
@@ -117,13 +121,7 @@ class UserService {
         );
       }
     } catch (err) {
-      console.log("servie layer->", err.message);
-      if (err.name === "TooManyRequest") throw err;
-      throw new ApiError(
-        "failed while sending otp, try again letter",
-        500,
-        "serverError"
-      );
+      throw err;
     }
   }
   static async resetPassword(user_email, password, otp) {
@@ -145,12 +143,7 @@ class UserService {
         return updatedUser;
       } else throw new ApiError("incorrect otp", 400, "BadRequest");
     } catch (err) {
-      if (err.name === "BadRequest") throw err;
-      throw new ApiError(
-        "failed while reseting password,please try again latter",
-        500,
-        "serverError"
-      );
+      throw err;
     }
   }
 }
