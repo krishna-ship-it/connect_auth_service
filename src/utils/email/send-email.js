@@ -9,6 +9,7 @@ const sendEmail = async (options) => {
       subject: options.subject,
       html: options.html,
     });
+    console.log(info);
   } catch (err) {
     throw new ApiError(`${err.message}`, 500, "serverError");
   }
