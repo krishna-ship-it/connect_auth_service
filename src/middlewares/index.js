@@ -3,6 +3,6 @@ module.exports = {
   UploadImageToCloudinary: require("./upload-image-to-cloudinary"),
   LoginUserFieldValidation: require("./login-user-field-validation"),
   VerifyToken: require("./token-verification"),
-  HashText: require("./hash-text"),
+  HashPass: require("./hash-password"),
   DestroyImageFromCloudinary: require("./delete-image-from-cloudinary"),
 };
