@@ -123,6 +123,16 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+const getUserById = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const user = await UserService.getUserById(id);
+    res.status(200).json({ user });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   signup,
   login,
@@ -131,4 +141,5 @@ module.exports = {
   changePassword,
   forgetPassword,
   resetPassword,
+  getUserById,
 };

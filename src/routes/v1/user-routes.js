@@ -9,6 +9,7 @@ const {
   HashPass,
   DestroyImageFromCloudinary,
 } = require("./../../middlewares/index");
+router.route("/:id").get(VerifyToken, UserController.getUserById);
 router
   .route("/signup")
   .post(

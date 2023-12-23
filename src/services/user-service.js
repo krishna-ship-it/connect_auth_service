@@ -10,6 +10,15 @@ const {
 } = require("./../config/index");
 const sendEmail = require("../utils/email/send-email");
 class UserService {
+  static async getUserById(id) {
+    try {
+      const user = await UserRepository.findUserById(id);
+      delete user.dataValues.password;
+      return user;
+    } catch (err) {
+      throw err;
+    }
+  }
   static async signup(userData) {
     try {
       const user = await UserRepository.signup(userData);
