@@ -27,6 +27,7 @@ router
     UploadImageToCloudinary,
     UserController.updateProfilePicture
   );
+router.route("/me").get(VerifyToken, UserController.getMyProfile);
 
 router
   .route("/update-password")

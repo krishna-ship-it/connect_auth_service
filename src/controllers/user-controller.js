@@ -133,6 +133,13 @@ const getUserById = async (req, res, next) => {
   }
 };
 
+const getMyProfile = async (req, res, next) => {
+  try {
+    res.status(200).json({ user: req.user });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   signup,
   login,
@@ -142,4 +149,5 @@ module.exports = {
   forgetPassword,
   resetPassword,
   getUserById,
+  getMyProfile,
 };
