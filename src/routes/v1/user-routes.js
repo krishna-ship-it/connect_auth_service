@@ -9,6 +9,7 @@ const {
   HashPass,
   DestroyImageFromCloudinary,
 } = require("./../../middlewares/index");
+router.route("").get(VerifyToken, UserController.getAllUser);
 router.route("/:id").get(VerifyToken, UserController.getUserById);
 router
   .route("/signup")
@@ -27,7 +28,7 @@ router
     UploadImageToCloudinary,
     UserController.updateProfilePicture
   );
-router.route("/me").get(VerifyToken, UserController.getMyProfile);
+router.route("/profile/me").get(VerifyToken, UserController.getMyProfile);
 
 router
   .route("/update-password")

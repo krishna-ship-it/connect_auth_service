@@ -155,6 +155,17 @@ class UserService {
       throw err;
     }
   }
+  static async getAllUsers(filter) {
+    const keys = Object.keys(filter);
+    const validFields = ["name", "email", "id"];
+    for (const key of keys) if (!validFields.includes(keys)) delete filter[key];
+    try {
+      const users = await UserRepository.getMany(filter);
+      return users;
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 module.exports = UserService;

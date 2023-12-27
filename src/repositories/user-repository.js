@@ -71,5 +71,13 @@ class UserRepository {
       throw err;
     }
   }
+  static async getMany(filter) {
+    try {
+      const users = await User.findAll(filter);
+      return users;
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 module.exports = UserRepository;

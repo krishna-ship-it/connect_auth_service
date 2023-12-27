@@ -140,6 +140,14 @@ const getMyProfile = async (req, res, next) => {
     next(err);
   }
 };
+const getAllUser = async (req, res, next) => {
+  try {
+    const users = await UserService.getAllUsers(req.query);
+    res.status(200).json({ users });
+  } catch (err) {
+    next(err);
+  }
+};
 module.exports = {
   signup,
   login,
@@ -150,4 +158,5 @@ module.exports = {
   resetPassword,
   getUserById,
   getMyProfile,
+  getAllUser,
 };
