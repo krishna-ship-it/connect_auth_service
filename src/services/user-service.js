@@ -159,7 +159,7 @@ class UserService {
     const keys = Object.keys(query);
     const validFields = ["name", "email", "id"];
     const page_no = query.page_no * 1 || 1;
-    const results_per_page = query.results_per_page * 1 || 1;
+    const results_per_page = query.results_per_page * 1 || 10;
     const filter = {};
     for (const key of keys)
       if (validFields.includes(key)) filter[key] = query[key];
