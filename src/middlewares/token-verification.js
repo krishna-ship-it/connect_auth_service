@@ -28,10 +28,11 @@ const verifyToken = async (req, res, next) => {
         )
       );
     delete user.dataValues.password;
+
     req.user = user;
-    next();
   } catch (err) {
     return next(err);
   }
+  next();
 };
 module.exports = verifyToken;

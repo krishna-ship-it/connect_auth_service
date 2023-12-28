@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const ApiError = require("../utils/errors/ApiError");
 const { User } = require("./../models/index");
 const { statusCodes, errors } = require("./../utils/errors/errors");
@@ -71,9 +72,11 @@ class UserRepository {
       throw err;
     }
   }
-  static async getMany(filter) {
+  static async getMany(filter, pagination) {
     try {
-      const users = await User.findAll(filter);
+      console.log("filter = ", filter);
+      console.log("pagination = ", pagination);
+      const users = await User.findAll({ where: filter, ...pagination });
       return users;
     } catch (err) {
       throw err;

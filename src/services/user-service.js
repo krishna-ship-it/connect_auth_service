@@ -155,12 +155,21 @@ class UserService {
       throw err;
     }
   }
-  static async getAllUsers(filter) {
-    const keys = Object.keys(filter);
+  static async getAllUsers(query) {
+    const keys = Object.keys(query);
     const validFields = ["name", "email", "id"];
-    for (const key of keys) if (!validFields.includes(keys)) delete filter[key];
+    const page_no = query.page_no * 1 || 1;
+    const results_per_page = query.results_per_page * 1 || 1;
+    const filter = {};
+    for (const key of keys)
+      if (validFields.includes(key)) filter[key] = query[key];
+    const pagination = {
+      limit: results_per_page,
+      offset: (page_no - 1) * results_per_page,
+    };
+
     try {
-      const users = await UserRepository.getMany(filter);
+      const users = await UserRepository.getMany(filter, pagination);
       return users;
     } catch (err) {
       throw err;
