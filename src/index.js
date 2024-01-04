@@ -3,6 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const expressUploader = require("express-fileupload");
 const { v2: cloudinary } = require("cloudinary");
+const cors = require("cors");
 dotenv.config();
 const {
   PORT,
@@ -18,6 +19,19 @@ cloudinary.config({
   api_key: CLOUDINARY_API_KEY,
   api_secret: CLOUDINARY_SECRET_KEY,
 });
+
+const allowedOrigins = ["http://localhost:5173"];
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 app.use(expressUploader({ useTempFiles: true }));
 app.use(express.json());
 app.use("/api/v1/users", UserRoutes);
