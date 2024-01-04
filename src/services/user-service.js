@@ -45,8 +45,8 @@ class UserService {
       } else {
         throw new ApiError(
           "invalid credentials",
-          errors.UnauthorizedRequest,
-          statusCodes.UnauthorizedRequest
+          statusCodes.UnauthorizedRequest,
+          errors.UnauthorizedRequest
         );
       }
     } catch (err) {
