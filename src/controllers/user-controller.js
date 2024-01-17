@@ -1,7 +1,10 @@
 const ApiError = require("../utils/errors/ApiError");
 const { UserService } = require("./../services/index");
 const { v2: cloudinary } = require("cloudinary");
-const { FORGET_PASSWORD_OTP_ATTEMPTS } = require("./../config/index");
+const {
+  FORGET_PASSWORD_OTP_ATTEMPTS,
+  GET_ALL_FRIENDS,
+} = require("./../config/index");
 const { errors, statusCodes } = require("../utils/errors/errors");
 const login = async (req, res, next) => {
   try {
@@ -124,6 +127,7 @@ const resetPassword = async (req, res, next) => {
 };
 
 const getUserById = async (req, res, next) => {
+  console.log("get user by id");
   try {
     const id = req.params.id;
     const user = await UserService.getUserById(id);
@@ -142,9 +146,11 @@ const getMyProfile = async (req, res, next) => {
 };
 const getAllUser = async (req, res, next) => {
   try {
+    console.log(req.query);
     const users = await UserService.getAllUsers(req.query);
     res.status(200).json({ users });
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };
