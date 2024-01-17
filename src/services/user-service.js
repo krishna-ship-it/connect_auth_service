@@ -9,6 +9,7 @@ const {
   FORGET_PASSWORD_OTP_ATTEMPTS,
 } = require("./../config/index");
 const sendEmail = require("../utils/email/send-email");
+const { Op } = require("sequelize");
 class UserService {
   static async getUserById(id) {
     try {
@@ -156,18 +157,21 @@ class UserService {
     }
   }
   static async getAllUsers(query) {
+    console.log(query);
     const keys = Object.keys(query);
     const validFields = ["name", "email", "id"];
     const page_no = query.page_no * 1 || 1;
     const results_per_page = query.results_per_page * 1 || 10;
-    const filter = {};
+    let filter = {};
     for (const key of keys)
       if (validFields.includes(key)) filter[key] = query[key];
     const pagination = {
       limit: results_per_page,
       offset: (page_no - 1) * results_per_page,
     };
-
+    if (filter.name) {
+      filter.name = { [Op.like]: `%${filter.name}%` };
+    }
     try {
       const users = await UserRepository.getMany(filter, pagination);
       return users;
